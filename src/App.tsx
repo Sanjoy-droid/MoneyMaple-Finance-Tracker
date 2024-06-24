@@ -1,14 +1,20 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/dashboard/index.tsx";
+import Auth from "./pages/auth/index.tsx";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <p className="text-blue-500 h-20 w-20">hello world</p>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Dashboard/>} />
+          <Route path="/auth" element={<Auth/>} />
+        </Routes>
+      </Router>
     </>
   );
 }
