@@ -1,8 +1,9 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
+const PORT = import.meta.env.VITE_PORT;
 interface FinancialRecord {
   id?: string;
-  userID: string;
+  userId: string;
   date: Date;
   description: string;
   amount: number;
@@ -28,11 +29,44 @@ export const FinancialRecordsProvider = ({
 }) => {
   const [records, setRecords] = useState<FinancialRecord[]>([]);
 
-  const addRecord = (record: FinancialRecord) => {};
+  const addRecord = async (record: FinancialRecord) => {
+    const response = await fetch(`${PORT}/financial-records`, {
+      method: "POST",
+      body: JSON.stringify(record),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
+    try {
+      if (response.ok) {
+        const newRecord = await response.json();
+        setRecords((prev) => [...prev, newRecord]);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error(error);
+      }
+    }
+  };
   return (
     <FinancialRecordsContext.Provider value={{ records, addRecord }}>
       {children}
     </FinancialRecordsContext.Provider>
   );
+};
+
+export const useFinancialRecords = () => {
+  const context = useContext<FinancialRecordsContextType | undefined>(
+    FinancialRecordsContext
+  );
+  if (!context) {
+    throw new Error(
+      "useFinancialRecords must be used within a FinancialRecordsProvider"
+    );
+  }
+
+  return context;
 };
