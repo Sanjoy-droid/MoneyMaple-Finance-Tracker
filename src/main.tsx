@@ -6,7 +6,6 @@ import { ClerkProvider } from "@clerk/clerk-react";
 
 const KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-console.log(KEY);
 if (!KEY) {
   throw new Error("Missing Publishble Key!!!");
 }
