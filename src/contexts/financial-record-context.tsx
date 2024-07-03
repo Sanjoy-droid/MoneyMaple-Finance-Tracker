@@ -2,7 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const PORT = import.meta.env.VITE_PORT;
-interface FinancialRecord {
+export interface FinancialRecord {
   id?: string;
   userId: string;
   date: Date;
