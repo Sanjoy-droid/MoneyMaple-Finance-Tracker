@@ -16,7 +16,7 @@ interface FinancialRecordsContextType {
   records: FinancialRecord[];
   addRecord: (record: FinancialRecord) => void;
   updateRecord: (id: string, newRecord: FinancialRecord) => void;
-  // deleteRecord: (id: string)=>void;
+  deleteRecord: (id: string) => void;
 }
 
 export const FinancialRecordsContext = createContext<
@@ -114,9 +114,31 @@ export const FinancialRecordsProvider = ({
     }
   };
 
+  //delete record logic
+
+  const deleteRecord = async (id: string) => {
+    const response = await fetch(`${PORT}/financial-records/${id}`, {
+      method: "DELETE",
+    });
+
+    try {
+      if (response.ok) {
+        const deletedRecord = await response.json();
+        setRecords((prev) =>
+          prev.filter((record) => record._id !== deletedRecord._id)
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error(error);
+      }
+    }
+  };
   return (
     <FinancialRecordsContext.Provider
-      value={{ records, addRecord, updateRecord }}
+      value={{ records, addRecord, updateRecord, deleteRecord }}
     >
       {children}
     </FinancialRecordsContext.Provider>
