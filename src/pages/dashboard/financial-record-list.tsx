@@ -62,7 +62,11 @@ const FinancialRecordList = () => {
         Header: "Description",
         accessor: "description",
         Cell: (props) => (
-          <EditableCell {...props} updateRecord={() => null} editable={true} />
+          <EditableCell
+            {...props}
+            updateRecord={updateCellRecord}
+            editable={true}
+          />
         ),
       },
       {
