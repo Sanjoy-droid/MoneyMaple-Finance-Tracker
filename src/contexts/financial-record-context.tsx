@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const PORT = import.meta.env.VITE_PORT;
 export interface FinancialRecord {
-  id?: string;
+  _id?: string;
   userId: string;
   date: Date;
   description: string;
@@ -15,7 +15,7 @@ export interface FinancialRecord {
 interface FinancialRecordsContextType {
   records: FinancialRecord[];
   addRecord: (record: FinancialRecord) => void;
-  //   updateRecord: (id: string, newRecord: FinancialRecord) => void;
+  updateRecord: (id: string, newRecord: FinancialRecord) => void;
   // deleteRecord: (id: string)=>void;
 }
 
@@ -58,6 +58,7 @@ export const FinancialRecordsProvider = ({
     fetchRecords();
   }, [user]);
 
+  // Add record logic
   const addRecord = async (record: FinancialRecord) => {
     const response = await fetch(`${PORT}/financial-records`, {
       method: "POST",
@@ -80,8 +81,43 @@ export const FinancialRecordsProvider = ({
       }
     }
   };
+  // update record logic
+
+  const updateRecord = async (id: string, newRecord: FinancialRecord) => {
+    const response = await fetch(`${PORT}/financial-records/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(newRecord),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    try {
+      if (response.ok) {
+        const newRecord = await response.json();
+        setRecords((prev) =>
+          prev.map((record) => {
+            if (record._id === id) {
+              return newRecord;
+            } else {
+              return record;
+            }
+          })
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error(error);
+      }
+    }
+  };
+
   return (
-    <FinancialRecordsContext.Provider value={{ records, addRecord }}>
+    <FinancialRecordsContext.Provider
+      value={{ records, addRecord, updateRecord }}
+    >
       {children}
     </FinancialRecordsContext.Provider>
   );
