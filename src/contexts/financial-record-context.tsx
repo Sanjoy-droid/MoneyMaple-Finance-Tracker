@@ -40,7 +40,7 @@ export const FinancialRecordsProvider = ({
       );
       if (response.ok) {
         const records = await response.json();
-        console.log(records);
+
         setRecords(records);
       } else {
         console.error("Failed to fetch records:", response.statusText);

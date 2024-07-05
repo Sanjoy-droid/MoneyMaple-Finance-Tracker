@@ -3,13 +3,13 @@ import {
   FinancialRecord,
   useFinancialRecords,
 } from "../../contexts/financial-record-context";
-import { useTable, Column, CellProps, Row } from "react-table";
-import { Input } from "postcss";
+import { useTable, Column, CellProps } from "react-table";
 
 interface EditableCellProps extends CellProps<FinancialRecord> {
   updateRecord: (rowIndex: number, columnId: string, value: any) => void;
   editable: boolean;
 }
+
 const EditableCell: React.FC<EditableCellProps> = ({
   value: initialValue,
   row,
@@ -53,7 +53,6 @@ const FinancialRecordList = () => {
   const updateCellRecord = (rowIndex: number, columnId: string, value: any) => {
     const id = records[rowIndex]._id;
     updateRecord(id ?? "", { ...records[rowIndex], [columnId]: value });
-    // updateRecord(rowIndex, columnId, value);
   };
 
   const columns: Array<Column<FinancialRecord>> = useMemo(
@@ -136,22 +135,37 @@ const FinancialRecordList = () => {
     <div className="table-container">
       <table {...getTableProps()} className="table">
         <thead>
-          {headerGroups.map((hg) => (
-            <tr {...hg.getHeaderGroupProps()}>
-              {hg.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-              ))}
-            </tr>
-          ))}
+          {headerGroups.map((headerGroup) => {
+            const { key, ...headerGroupProps } =
+              headerGroup.getHeaderGroupProps();
+            return (
+              <tr key={key} {...headerGroupProps}>
+                {headerGroup.headers.map((column) => {
+                  const { key, ...headerProps } = column.getHeaderProps();
+                  return (
+                    <th key={key} {...headerProps}>
+                      {column.render("Header")}
+                    </th>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row, idx) => {
+          {rows.map((row) => {
             prepareRow(row);
+            const { key, ...rowProps } = row.getRowProps();
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                ))}
+              <tr key={key} {...rowProps}>
+                {row.cells.map((cell) => {
+                  const { key, ...cellProps } = cell.getCellProps();
+                  return (
+                    <td key={key} {...cellProps}>
+                      {cell.render("Cell")}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}
